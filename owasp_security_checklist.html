@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OWASP Top 10 Security Testing Checklist</title>
+    <!-- This file should be saved as index.html for web hosting -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            color: #333;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+        
+        .progress-bar {
+            background: #e0e0e0;
+            border-radius: 25px;
+            height: 20px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            height: 100%;
+            width: 0%;
+            border-radius: 25px;
+            transition: width 0.3s ease;
+            position: relative;
+        }
+        
+        .progress-text {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            color: white;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .vulnerability-card {
+            background: white;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .vulnerability-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-header.completed {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+        }
+        
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 0;
+        }
+        
+        .card-number {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        
+        .card-content {
+            padding: 25px;
+            display: none;
+        }
+        
+        .card-content.active {
+            display: block;
+        }
+        
+        .description {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .checklist {
+            list-style: none;
+        }
+        
+        .checklist-item {
+            background: #f8f9fa;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border-left: 4px solid #ddd;
+        }
+        
+        .checklist-item:hover {
+            background: #e9ecef;
+        }
+        
+        .checklist-item.completed {
+            background: #d4edda;
+            border-left-color: #4CAF50;
+        }
+        
+        .checklist-item input[type="checkbox"] {
+            margin-right: 12px;
+            transform: scale(1.2);
+        }
+        
+        .notes-section {
+            margin-top: 20px;
+        }
+        
+        .notes-textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+        
+        .notes-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .summary {
+            background: linear-gradient(135deg, #f8f9ff, #e6f2ff);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+            text-align: center;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+        
+        .export-section {
+            margin-top: 30px;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛡️ OWASP Top 10 Security Testing Checklist</h1>
+            <p class="subtitle">Comprehensive security testing checklist based on OWASP Top 10 2021</p>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text" id="progressText">0% Complete (0/80 tests)</div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn btn-primary" onclick="expandAll()">Expand All</button>
+            <button class="btn btn-primary" onclick="collapseAll()">Collapse All</button>
+            <button class="btn btn-secondary" onclick="resetAll()">Reset All</button>
+            <button class="btn btn-success" onclick="exportReport()">Export Report</button>
+        </div>
+        
+        <div id="vulnerabilities"></div>
+        
+        <div class="summary">
+            <h2>Testing Summary</h2>
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="completedVulns">0</div>
+                    <div class="stat-label">Vulnerabilities Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="completedTests">0</div>
+                    <div class="stat-label">Tests Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalNotes">0</div>
+                    <div class="stat-label">Notes Added</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="export-section">
+            <p><strong>💡 Pro Tip:</strong> Your progress is automatically saved in your browser session. Use "Export Report" to save your findings permanently.</p>
+        </div>
+    </div>
+
+    <script>
+        const owaspTop10 = [
+            {
+                id: 1,
+                title: "Broken Access Control",
+                description: "Access control failures enable attackers to bypass authorization and perform tasks as other users or administrators.",
+                tests: [
+                    "Test for vertical privilege escalation (accessing admin functions)",
+                    "Test for horizontal privilege escalation (accessing other users' data)",
+                    "Test directory traversal vulnerabilities",
+                    "Test for insecure direct object references (IDOR)",
+                    "Test access control bypass using parameter manipulation",
+                    "Test for missing access controls on API endpoints",
+                    "Test for forced browsing to restricted pages",
+                    "Test JWT token manipulation and validation"
+                ]
+            },
+            {
+                id: 2,
+                title: "Cryptographic Failures",
+                description: "Failures related to cryptography (or lack thereof) which often lead to exposure of sensitive data.",
+                tests: [
+                    "Test for data transmission without encryption (HTTP vs HTTPS)",
+                    "Test for weak or outdated cryptographic algorithms",
+                    "Test for hardcoded cryptographic keys",
+                    "Test for insufficient key management",
+                    "Test for weak password hashing algorithms",
+                    "Test for insecure random number generation",
+                    "Test for certificate validation issues",
+                    "Test for sensitive data exposure in transit and at rest"
+                ]
+            },
+            {
+                id: 3,
+                title: "Injection",
+                description: "Injection flaws occur when untrusted data is sent to an interpreter as part of a command or query.",
+                tests: [
+                    "Test for SQL injection in all input fields",
+                    "Test for NoSQL injection vulnerabilities",
+                    "Test for OS command injection",
+                    "Test for LDAP injection",
+                    "Test for XPath injection",
+                    "Test for XML injection",
+                    "Test for Server-Side Template Injection (SSTI)",
+                    "Test for code injection vulnerabilities"
+                ]
+            },
+            {
+                id: 4,
+                title: "Insecure Design",
+                description: "Insecure design is a broad category representing different weaknesses in design and architectural flaws.",
+                tests: [
+                    "Review threat modeling and security requirements",
+                    "Test for missing or ineffective security controls",
+                    "Test business logic vulnerabilities",
+                    "Test for race conditions",
+                    "Test for workflow bypass vulnerabilities",
+                    "Test for insufficient anti-automation measures",
+                    "Test for missing security headers",
+                    "Review secure development lifecycle implementation"
+                ]
+            },
+            {
+                id: 5,
+                title: "Security Misconfiguration",
+                description: "Security misconfiguration is commonly a result of insecure default configurations, incomplete configurations, or misconfigured security headers.",
+                tests: [
+                    "Test for default credentials and accounts",
+                    "Test for unnecessary features, ports, services enabled",
+                    "Test for outdated software and security patches",
+                    "Test for improper error handling and information disclosure",
+                    "Test for missing or insecure security headers",
+                    "Test for insecure cloud storage permissions",
+                    "Test for verbose error messages",
+                    "Test for backup files and directories exposure"
+                ]
+            },
+            {
+                id: 6,
+                title: "Vulnerable and Outdated Components",
+                description: "Components with known vulnerabilities are a widespread issue and can undermine application defenses.",
+                tests: [
+                    "Inventory all components and their versions",
+                    "Test for known vulnerabilities in components",
+                    "Test for unsupported or end-of-life components",
+                    "Test for components with default configurations",
+                    "Test for unused components and dependencies",
+                    "Test for components from unreliable sources",
+                    "Test for missing security updates",
+                    "Test for vulnerable third-party libraries"
+                ]
+            },
+            {
+                id: 7,
+                title: "Identification and Authentication Failures",
+                description: "Authentication and session management vulnerabilities that allow attackers to compromise passwords, keys, or session tokens.",
+                tests: [
+                    "Test for weak password policies",
+                    "Test for brute force attack protection",
+                    "Test for credential stuffing vulnerabilities",
+                    "Test for weak session management",
+                    "Test for session fixation vulnerabilities",
+                    "Test for multi-factor authentication bypass",
+                    "Test for password recovery mechanism flaws",
+                    "Test for account enumeration vulnerabilities"
+                ]
+            },
+            {
+                id: 8,
+                title: "Software and Data Integrity Failures",
+                description: "Software and data integrity failures relate to code and infrastructure that do not protect against integrity violations.",
+                tests: [
+                    "Test for unsigned or tampered software updates",
+                    "Test for insecure CI/CD pipeline configurations",
+                    "Test for dependency confusion attacks",
+                    "Test for code injection through auto-update mechanisms",
+                    "Test for insecure deserialization vulnerabilities",
+                    "Test for tampering with critical data",
+                    "Test for insufficient integrity verification",
+                    "Test for supply chain attack vectors"
+                ]
+            },
+            {
+                id: 9,
+                title: "Security Logging and Monitoring Failures",
+                description: "Insufficient logging and monitoring can prevent detection of ongoing attacks and incident response.",
+                tests: [
+                    "Test for adequate logging of security events",
+                    "Test for log integrity and protection",
+                    "Test for log injection vulnerabilities",
+                    "Test for sensitive data exposure in logs",
+                    "Test for real-time monitoring capabilities",
+                    "Test for alerting mechanisms",
+                    "Test for log retention policies",
+                    "Test for incident response procedures"
+                ]
+            },
+            {
+                id: 10,
+                title: "Server-Side Request Forgery (SSRF)",
+                description: "SSRF flaws occur when a web application fetches a remote resource without validating the user-supplied URL.",
+                tests: [
+                    "Test for SSRF in URL parameters",
+                    "Test for blind SSRF vulnerabilities",
+                    "Test for SSRF through file upload functionality",
+                    "Test for SSRF in webhook implementations",
+                    "Test for SSRF bypass techniques",
+                    "Test for internal network access via SSRF",
+                    "Test for cloud metadata service access",
+                    "Test for SSRF through XML external entities"
+                ]
+            }
+        ];
+
+        let testProgress = {};
+        let notes = {};
+
+        function initializeApp() {
+            renderVulnerabilities();
+            loadProgress();
+            updateProgress();
+        }
+
+        function renderVulnerabilities() {
+            const container = document.getElementById('vulnerabilities');
+            container.innerHTML = '';
+
+            owaspTop10.forEach(vuln => {
+                const card = document.createElement('div');
+                card.className = 'vulnerability-card';
+                card.innerHTML = `
+                    <div class="card-header" onclick="toggleCard(${vuln.id})">
+                        <h3 class="card-title">${vuln.title}</h3>
+                        <span class="card-number">#${vuln.id}</span>
+                    </div>
+                    <div class="card-content" id="card-${vuln.id}">
+                        <div class="description">
+                            <strong>Description:</strong> ${vuln.description}
+                        </div>
+                        <ul class="checklist">
+                            ${vuln.tests.map((test, index) => `
+                                <li class="checklist-item" onclick="toggleTest(${vuln.id}, ${index})">
+                                    <input type="checkbox" id="test-${vuln.id}-${index}" onchange="updateTestStatus(${vuln.id}, ${index})">
+                                    <label for="test-${vuln.id}-${index}">${test}</label>
+                                </li>
+                            `).join('')}
+                        </ul>
+                        <div class="notes-section">
+                            <h4>Notes & Findings:</h4>
+                            <textarea class="notes-textarea" id="notes-${vuln.id}" 
+                                placeholder="Add your testing notes, findings, and evidence here..."
+                                onchange="saveNotes(${vuln.id})"></textarea>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function toggleCard(vulnId) {
+            const content = document.getElementById(`card-${vulnId}`);
+            content.classList.toggle('active');
+        }
+
+        function expandAll() {
+            owaspTop10.forEach(vuln => {
+                document.getElementById(`card-${vuln.id}`).classList.add('active');
+            });
+        }
+
+        function collapseAll() {
+            owaspTop10.forEach(vuln => {
+                document.getElementById(`card-${vuln.id}`).classList.remove('active');
+            });
+        }
+
+        function toggleTest(vulnId, testIndex) {
+            const checkbox = document.getElementById(`test-${vulnId}-${testIndex}`);
+            checkbox.checked = !checkbox.checked;
+            updateTestStatus(vulnId, testIndex);
+        }
+
+        function updateTestStatus(vulnId, testIndex) {
+            const checkbox = document.getElementById(`test-${vulnId}-${testIndex}`);
+            const item = checkbox.parentElement;
+            
+            if (!testProgress[vulnId]) {
+                testProgress[vulnId] = {};
+            }
+            
+            testProgress[vulnId][testIndex] = checkbox.checked;
+            
+            if (checkbox.checked) {
+                item.classList.add('completed');
+            } else {
+                item.classList.remove('completed');
+            }
+            
+            updateVulnerabilityStatus(vulnId);
+            updateProgress();
+            saveProgress();
+        }
+
+        function updateVulnerabilityStatus(vulnId) {
+            const vuln = owaspTop10.find(v => v.id === vulnId);
+            const completedTests = testProgress[vulnId] ? 
+                Object.values(testProgress[vulnId]).filter(status => status).length : 0;
+            
+            const header = document.querySelector(`[onclick="toggleCard(${vulnId})"]`);
+            if (completedTests === vuln.tests.length) {
+                header.classList.add('completed');
+            } else {
+                header.classList.remove('completed');
+            }
+        }
+
+        function saveNotes(vulnId) {
+            const textarea = document.getElementById(`notes-${vulnId}`);
+            notes[vulnId] = textarea.value;
+            saveProgress();
+            updateProgress();
+        }
+
+        function updateProgress() {
+            let totalTests = 0;
+            let completedTests = 0;
+            let completedVulns = 0;
+            let totalNotesCount = 0;
+
+            owaspTop10.forEach(vuln => {
+                totalTests += vuln.tests.length;
+                const vulnCompleted = testProgress[vuln.id] ? 
+                    Object.values(testProgress[vuln.id]).filter(status => status).length : 0;
+                completedTests += vulnCompleted;
+                
+                if (vulnCompleted === vuln.tests.length) {
+                    completedVulns++;
+                }
+                
+                if (notes[vuln.id] && notes[vuln.id].trim()) {
+                    totalNotesCount++;
+                }
+            });
+
+            const percentage = totalTests > 0 ? Math.round((completedTests / totalTests) * 100) : 0;
+            
+            document.getElementById('progressFill').style.width = percentage + '%';
+            document.getElementById('progressText').textContent = 
+                `${percentage}% Complete (${completedTests}/${totalTests} tests)`;
+            
+            document.getElementById('completedVulns').textContent = completedVulns;
+            document.getElementById('completedTests').textContent = completedTests;
+            document.getElementById('totalNotes').textContent = totalNotesCount;
+        }
+
+        function saveProgress() {
+            const data = {
+                testProgress: testProgress,
+                notes: notes,
+                timestamp: new Date().toISOString()
+            };
+            try {
+                localStorage.setItem('owaspProgress', JSON.stringify(data));
+            } catch (e) {
+                console.warn('Could not save to localStorage:', e);
+                // Fallback to session storage
+                window.sessionData = data;
+            }
+        }
+
+        function loadProgress() {
+            let data = null;
+            
+            try {
+                const saved = localStorage.getItem('owaspProgress');
+                if (saved) {
+                    data = JSON.parse(saved);
+                }
+            } catch (e) {
+                console.warn('Could not load from localStorage:', e);
+                // Fallback to session data
+                data = window.sessionData;
+            }
+            
+            if (data) {
+                testProgress = data.testProgress || {};
+                notes = data.notes || {};
+                
+                // Apply loaded progress
+                owaspTop10.forEach(vuln => {
+                    if (testProgress[vuln.id]) {
+                        vuln.tests.forEach((test, index) => {
+                            if (testProgress[vuln.id][index]) {
+                                const checkbox = document.getElementById(`test-${vuln.id}-${index}`);
+                                if (checkbox) {
+                                    checkbox.checked = true;
+                                    checkbox.parentElement.classList.add('completed');
+                                }
+                            }
+                        });
+                        updateVulnerabilityStatus(vuln.id);
+                    }
+                    
+                    if (notes[vuln.id]) {
+                        const textarea = document.getElementById(`notes-${vuln.id}`);
+                        if (textarea) {
+                            textarea.value = notes[vuln.id];
+                        }
+                    }
+                });
+            }
+        }
+
+        function resetAll() {
+            if (confirm('Are you sure you want to reset all progress? This action cannot be undone.')) {
+                testProgress = {};
+                notes = {};
+                
+                // Clear localStorage
+                try {
+                    localStorage.removeItem('owaspProgress');
+                } catch (e) {
+                    console.warn('Could not clear localStorage:', e);
+                }
+                window.sessionData = null;
+                
+                // Reset UI
+                document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+                document.querySelectorAll('.checklist-item').forEach(item => item.classList.remove('completed'));
+                document.querySelectorAll('.card-header').forEach(header => header.classList.remove('completed'));
+                document.querySelectorAll('.notes-textarea').forEach(textarea => textarea.value = '');
+                
+                updateProgress();
+            }
+        }
+
+        function exportReport() {
+            let report = `OWASP Top 10 Security Testing Report\n`;
+            report += `Generated: ${new Date().toLocaleString()}\n`;
+            report += `========================================\n\n`;
+            
+            let totalTests = 0;
+            let completedTests = 0;
+            
+            owaspTop10.forEach(vuln => {
+                const vulnCompleted = testProgress[vuln.id] ? 
+                    Object.values(testProgress[vuln.id]).filter(status => status).length : 0;
+                totalTests += vuln.tests.length;
+                completedTests += vulnCompleted;
+                
+                report += `${vuln.id}. ${vuln.title}\n`;
+                report += `Progress: ${vulnCompleted}/${vuln.tests.length} tests completed\n`;
+                report += `Description: ${vuln.description}\n\n`;
+                
+                report += `Tests:\n`;
+                vuln.tests.forEach((test, index) => {
+                    const status = testProgress[vuln.id] && testProgress[vuln.id][index] ? '✓' : '✗';
+                    report += `  ${status} ${test}\n`;
+                });
+                
+                if (notes[vuln.id] && notes[vuln.id].trim()) {
+                    report += `\nNotes:\n${notes[vuln.id]}\n`;
+                }
+                
+                report += `\n${'='.repeat(50)}\n\n`;
+            });
+            
+            report += `SUMMARY:\n`;
+            report += `Total Progress: ${Math.round((completedTests/totalTests)*100)}%\n`;
+            report += `Completed Tests: ${completedTests}/${totalTests}\n`;
+            report += `Vulnerabilities Fully Tested: ${document.getElementById('completedVulns').textContent}/10\n`;
+            
+            // Create download
+            const blob = new Blob([report], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `OWASP-Top10-Report-${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Initialize the app when page loads
+        window.onload = initializeApp;
+    </script>
+</body>
+</html>
